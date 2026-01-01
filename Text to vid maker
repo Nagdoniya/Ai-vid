@@ -1,0 +1,2778 @@
+// frontend/src/themes/index.js
+export const colors = {
+  // Primary
+  primary: '#6366F1',
+  primaryDark: '#4F46E5',
+  primaryLight: '#818CF8',
+  
+  // Secondary
+  secondary: '#10B981',
+  secondaryDark: '#059669',
+  secondaryLight: '#34D399',
+  
+  // Neutral
+  background: '#0F172A',
+  surface: '#1E293B',
+  card: '#334155',
+  border: '#475569',
+  text: {
+    primary: '#F1F5F9',
+    secondary: '#94A3B8',
+    disabled: '#64748B'
+  },
+  
+  // Status
+  success: '#10B981',
+  warning: '#F59E0B',
+  error: '#EF4444',
+  info: '#3B82F6',
+  
+  // Gradients
+  gradients: {
+    primary: ['#6366F1', '#8B5CF6'],
+    secondary: ['#10B981', '#34D399'],
+    dark: ['#0F172A', '#1E293B']
+  }
+};
+
+export const typography = {
+  fontFamily: {
+    regular: 'Inter-Regular',
+    medium: 'Inter-Medium',
+    semiBold: 'Inter-SemiBold',
+    bold: 'Inter-Bold'
+  },
+  sizes: {
+    xs: 12,
+    sm: 14,
+    md: 16,
+    lg: 18,
+    xl: 20,
+    '2xl': 24,
+    '3xl': 30,
+    '4xl': 36
+  },
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.75
+  }
+};
+
+export const spacing = {
+  xs: 4,
+  sm: 8,
+  md: 16,
+  lg: 24,
+  xl: 32,
+  '2xl': 40,
+  '3xl': 48
+};
+
+export const borderRadius = {
+  none: 0,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 16,
+  '2xl': 24,
+  full: 9999
+};
+
+export const shadows = {
+  sm: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2
+  },
+  md: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 4
+  },
+  lg: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 8
+  }
+};
+
+export const animations = {
+  scale: {
+    in: { scale: 0.95 },
+    out: { scale: 1 }
+  },
+  fade: {
+    in: { opacity: 0 },
+    out: { opacity: 1 }
+  },
+  slide: {
+    fromRight: { translateX: 100 },
+    toCenter: { translateX: 0 }
+  }
+};
+
+export default {
+  colors,
+  typography,
+  spacing,
+  borderRadius,
+  shadows,
+  animations
+};
+// frontend/src/components/common/Button.js
+import React from 'react';
+import {
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  StyleSheet
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, typography, spacing, borderRadius } from '../../themes';
+
+const Button = ({
+  title,
+  onPress,
+  variant = 'primary',
+  size = 'md',
+  loading = false,
+  disabled = false,
+  icon: Icon,
+  iconPosition = 'left',
+  style,
+  textStyle,
+  ...props
+}) => {
+  const getButtonStyle = () => {
+    const baseStyle = [styles.base];
+    
+    // Size
+    const sizeStyles = {
+      sm: styles.sm,
+      md: styles.md,
+      lg: styles.lg
+    };
+    baseStyle.push(sizeStyles[size]);
+    
+    // Variant
+    const variantStyles = {
+      primary: styles.primary,
+      secondary: styles.secondary,
+      outline: styles.outline,
+      ghost: styles.ghost,
+      danger: styles.danger
+    };
+    baseStyle.push(variantStyles[variant]);
+    
+    // Disabled
+    if (disabled || loading) {
+      baseStyle.push(styles.disabled);
+    }
+    
+    // Custom style
+    if (style) baseStyle.push(style);
+    
+    return baseStyle;
+  };
+  
+  const getTextStyle = () => {
+    const baseStyle = [styles.textBase];
+    
+    const sizeStyles = {
+      sm: styles.textSm,
+      md: styles.textMd,
+      lg: styles.textLg
+    };
+    baseStyle.push(sizeStyles[size]);
+    
+    const variantTextStyles = {
+      primary: styles.textPrimary,
+      secondary: styles.textSecondary,
+      outline: styles.textOutline,
+      ghost: styles.textGhost,
+      danger: styles.textDanger
+    };
+    baseStyle.push(variantTextStyles[variant]);
+    
+    if (disabled || loading) {
+      baseStyle.push(styles.textDisabled);
+    }
+    
+    if (textStyle) baseStyle.push(textStyle);
+    
+    return baseStyle;
+  };
+  
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          size="small"
+          color={
+            variant === 'primary' || variant === 'danger' 
+              ? colors.text.primary 
+              : colors.primary
+          }
+        />
+      );
+    }
+    
+    return (
+      <>
+        {Icon && iconPosition === 'left' && (
+          <Icon style={[styles.icon, iconPosition === 'left' && styles.iconLeft]} />
+        )}
+        <Text style={getTextStyle()}>{title}</Text>
+        {Icon && iconPosition === 'right' && (
+          <Icon style={[styles.icon, iconPosition === 'right' && styles.iconRight]} />
+        )}
+      </>
+    );
+  };
+  //BUTTON COMPONENT
+  const renderButton = () => {
+    if (variant === 'primary') {
+      return (
+        <LinearGradient
+          colors={colors.gradients.primary}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={getButtonStyle()}
+        >
+          {renderContent()}
+        </LinearGradient>
+      );
+    }
+    
+    return (
+      <TouchableOpacity
+        style={getButtonStyle()}
+        onPress={onPress}
+        disabled={disabled || loading}
+        activeOpacity={0.8}
+        {...props}
+      >
+        {renderContent()}
+      </TouchableOpacity>
+    );
+  };
+  
+  return renderButton();
+};
+
+const styles = StyleSheet.create({
+  base: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden'
+  },
+  
+  // Sizes
+  sm: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    minHeight: 36
+  },
+  md: {
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.md,
+    minHeight: 44
+  },
+  lg: {
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
+    minHeight: 52
+  },
+  
+  // Variants
+  primary: {
+    backgroundColor: colors.primary
+  },
+  secondary: {
+    backgroundColor: colors.secondary
+  },
+  outline: {
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.border
+  },
+  ghost: {
+    backgroundColor: 'transparent'
+  },
+  danger: {
+    backgroundColor: colors.error
+  },
+  
+  // Disabled
+  disabled: {
+    opacity: 0.5
+  },
+  
+  // Text
+  textBase: {
+    fontFamily: typography.fontFamily.medium,
+    textAlign: 'center'
+  },
+  textSm: {
+    fontSize: typography.sizes.sm
+  },
+  textMd: {
+    fontSize: typography.sizes.md
+  },
+  textLg: {
+    fontSize: typography.sizes.lg
+  },
+  textPrimary: {
+    color: colors.text.primary
+  },
+  textSecondary: {
+    color: colors.text.primary
+  },
+  textOutline: {
+    color: colors.text.primary
+  },
+  textGhost: {
+    color: colors.text.primary
+  },
+  textDanger: {
+    color: colors.text.primary
+  },
+  textDisabled: {
+    color: colors.text.disabled
+  },
+  
+  // Icon
+  icon: {
+    marginHorizontal: spacing.xs
+  },
+  iconLeft: {
+    marginRight: spacing.sm
+  },
+  iconRight: {
+    marginLeft: spacing.sm
+  }
+});
+export default Button;// frontend/src/components/common/Card.js
+
+import React from 'react';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity
+} from 'react-native';
+import { colors, spacing, borderRadius, shadows } from '../../themes';
+
+const Card = ({
+  children,
+  variant = 'default',
+  padding = 'md',
+  onPress,
+  style,
+  ...props
+}) => {
+  const getPadding = () => {
+    const paddingMap = {
+      none: 0,
+      sm: spacing.sm,
+      md: spacing.md,
+      lg: spacing.lg,
+      xl: spacing.xl
+    };
+    return paddingMap[padding];
+  };
+  
+  const getVariantStyle = () => {
+    const variants = {
+      default: styles.default,
+      elevated: styles.elevated,
+      outlined: styles.outlined,
+      filled: styles.filled
+    };
+    return variants[variant];
+  };
+  
+  const Container = onPress ? TouchableOpacity : View;
+  
+  return (
+    <Container
+      style={[
+        styles.base,
+        getVariantStyle(),
+        { padding: getPadding() },
+        style
+      ]}
+      onPress={onPress}
+      activeOpacity={0.9}
+      {...props}
+    >
+      {children}
+    </Container>
+  );
+};
+
+const styles = StyleSheet.create({
+  base: {
+    borderRadius: borderRadius.lg,
+    backgroundColor: colors.surface
+  },
+  default: {
+    backgroundColor: colors.surface
+  },
+  elevated: {
+    backgroundColor: colors.surface,
+    ...shadows.md
+  },
+  outlined: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border
+  },
+  filled: {
+    backgroundColor: colors.card
+  }
+});
+export default Card;
+
+//Authentication Module
+// frontend/src/modules/auth/index.js
+export { default as LoginScreen } from './screens/LoginScreen';
+export { default as RegisterScreen } from './screens/RegisterScreen';
+export { default as ForgotPasswordScreen } from './screens/ForgotPasswordScreen';
+export { default as VerifyEmailScreen } from './screens/VerifyEmailScreen';
+export { default as AuthProvider } from './providers/AuthProvider';
+export { default as useAuth } from './hooks/useAuth';
+
+//Login Screen
+// frontend/src/modules/auth/screens/LoginScreen.js
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  TouchableOpacity
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAuth } from '../hooks/useAuth';
+import Button from '../../../components/common/Button';
+import Input from '../../../components/common/Input';
+import Card from '../../../components/common/Card';
+import { colors, typography, spacing } from '../../../themes';
+import { Ionicons } from '@expo/vector-icons';
+
+const LoginScreen = ({ navigation }) => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
+  const [errors, setErrors] = useState({});
+  const { login, loginWithGoogle, loading } = useAuth();
+
+  const validate = () => {
+    const newErrors = {};
+    
+    if (!email) {
+      newErrors.email = 'Email is required';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email is invalid';
+    }
+    
+    if (!password) {
+      newErrors.password = 'Password is required';
+    } else if (password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleLogin = async () => {
+    if (!validate()) return;
+    
+    try {
+      await login(email, password, rememberMe);
+      // Navigation is handled in AuthProvider
+    } catch (error) {
+      setErrors({ general: error.message });
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      await loginWithGoogle();
+    } catch (error) {
+      setErrors({ general: error.message });
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          <LinearGradient
+            colors={colors.gradients.dark}
+            style={styles.header}
+          >
+            <View style={styles.logoContainer}>
+              <Ionicons name="videocam" size={60} color={colors.primary} />
+              <Text style={styles.logoText}>AI Video Studio</Text>
+              <Text style={styles.tagline}>
+                Transform photos into stunning videos
+              </Text>
+            </View>
+          </LinearGradient>
+
+          <View style={styles.formContainer}>
+            <Card variant="elevated" padding="lg" style={styles.card}>
+              <Text style={styles.title}>Welcome Back</Text>
+              <Text style={styles.subtitle}>
+                Sign in to continue creating amazing videos
+              </Text>
+
+              {errors.general && (
+                <View style={styles.errorContainer}>
+                  <Ionicons name="alert-circle" size={20} color={colors.error} />
+                  <Text style={styles.errorText}>{errors.general}</Text>
+                </View>
+              )}
+
+              <View style={styles.form}>
+                <Input
+                  label="Email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChangeText={setEmail}
+                  error={errors.email}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  leftIcon={<Ionicons name="mail" size={20} color={colors.text.secondary} />}
+                />
+
+                <Input
+                  label="Password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChangeText={setPassword}
+                  error={errors.password}
+                  secureTextEntry
+                  leftIcon={<Ionicons name="lock-closed" size={20} color={colors.text.secondary} />}
+                  rightIcon={
+                    <TouchableOpacity>
+                      <Ionicons name="eye" size={20} color={colors.text.secondary} />
+                    </TouchableOpacity>
+                  }
+                />
+
+                <View style={styles.rememberContainer}>
+                  <TouchableOpacity
+                    style={styles.rememberCheck}
+                    onPress={() => setRememberMe(!rememberMe)}
+                  >
+                    <View style={[
+                      styles.checkbox,
+                      rememberMe && styles.checkboxChecked
+                    ]}>
+                      {rememberMe && (
+                        <Ionicons name="checkmark" size={16} color={colors.text.primary} />
+                      )}
+                    </View>
+                    <Text style={styles.rememberText}>Remember me</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('ForgotPassword')}
+                  >
+                    <Text style={styles.forgotText}>Forgot password?</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <Button
+                  title="Sign In"
+                  onPress={handleLogin}
+                  loading={loading}
+                  size="lg"
+                  style={styles.signInButton}
+                />
+
+                <View style={styles.divider}>
+                  <View style={styles.dividerLine} />
+                  <Text style={styles.dividerText}>OR</Text>
+                  <View style={styles.dividerLine} />
+                </View>
+
+                <Button
+                  title="Continue with Google"
+                  variant="outline"
+                  onPress={handleGoogleLogin}
+                  icon={() => (
+                    <Image
+                      source={{ uri: 'https://cdn-icons-png.flaticon.com/512/2991/2991148.png' }}
+                      style={styles.googleIcon}
+                    />
+                  )}
+                  iconPosition="left"
+                  style={styles.socialButton}
+                />
+
+                <Button
+                  title="Continue with Apple"
+                  variant="outline"
+                  onPress={() => {}}
+                  icon={() => (
+                    <Ionicons name="logo-apple" size={20} color={colors.text.primary} />
+                  )}
+                  iconPosition="left"
+                  style={styles.socialButton}
+                />
+
+                <View style={styles.registerContainer}>
+                  <Text style={styles.registerText}>
+                    Don't have an account?{' '}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('Register')}
+                  >
+                    <Text style={styles.registerLink}>Sign up</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Card>
+
+            <View style={styles.footer}>
+              <Text style={styles.footerText}>
+                By continuing, you agree to our{' '}
+                <Text style={styles.footerLink}>Terms of Service</Text>{' '}
+                and{' '}
+                <Text style={styles.footerLink}>Privacy Policy</Text>
+              </Text>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background
+  },
+  keyboardView: {
+    flex: 1
+  },
+  scrollContent: {
+    flexGrow: 1
+  },
+  header: {
+    paddingTop: spacing['3xl'],
+    paddingBottom: spacing.xl,
+    alignItems: 'center'
+  },
+  logoContainer: {
+    alignItems: 'center'
+  },
+  logoText: {
+    fontSize: typography.sizes['3xl'],
+    fontFamily: typography.fontFamily.bold,
+    color: colors.text.primary,
+    marginTop: spacing.md
+  },
+  tagline: {
+    fontSize: typography.sizes.md,
+    color: colors.text.secondary,
+    marginTop: spacing.xs
+  },
+  formContainer: {
+    flex: 1,
+    padding: spacing.lg,
+    marginTop: -spacing.xl
+  },
+  card: {
+    marginBottom: spacing.lg
+  },
+  title: {
+    fontSize: typography.sizes['2xl'],
+    fontFamily: typography.fontFamily.bold,
+    color: colors.text.primary,
+    marginBottom: spacing.xs
+  },
+  subtitle: {
+    fontSize: typography.sizes.md,
+    color: colors.text.secondary,
+    marginBottom: spacing.lg
+  },
+  errorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: `${colors.error}20`,
+    padding: spacing.sm,
+    borderRadius: borderRadius.md,
+    marginBottom: spacing.md
+  },
+  errorText: {
+    color: colors.error,
+    marginLeft: spacing.sm,
+    fontSize: typography.sizes.sm
+  },
+  form: {
+    gap: spacing.md
+  },
+  rememberContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  rememberCheck: {
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderRadius: borderRadius.sm,
+    borderWidth: 2,
+    borderColor: colors.border,
+    marginRight: spacing.sm,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  checkboxChecked: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary
+  },
+  rememberText: {
+    color: colors.text.secondary,
+    fontSize: typography.sizes.sm
+  },
+  forgotText: {
+    color: colors.primary,
+    fontSize: typography.sizes.sm
+  },
+  signInButton: {
+    marginTop: spacing.sm
+  },
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.lg
+  },
+  dividerLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: colors.border
+  },
+  dividerText: {
+    color: colors.text.secondary,
+    marginHorizontal: spacing.md,
+    fontSize: typography.sizes.sm
+  },
+  socialButton: {
+    borderColor: colors.border
+  },
+  googleIcon: {
+    width: 20,
+    height: 20
+  },
+  registerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: spacing.lg
+  },
+  registerText: {
+    color: colors.text.secondary,
+    fontSize: typography.sizes.md
+  },
+  registerLink: {
+    color: colors.primary,
+    fontSize: typography.sizes.md,
+    fontFamily: typography.fontFamily.semiBold
+  },
+  footer: {
+    padding: spacing.md,
+    alignItems: 'center'
+  },
+  footerText: {
+    color: colors.text.secondary,
+    fontSize: typography.sizes.sm,
+    textAlign: 'center',
+    lineHeight: typography.lineHeights.relaxed
+  },
+  footerLink: {
+    color: colors.primary
+  }
+});
+
+export default LoginScreen;
+// frontend/src/navigation/AppNavigator.js
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { colors } from '../themes';
+
+// Auth Screens
+import LoginScreen from '../modules/auth/screens/LoginScreen';
+import RegisterScreen from '../modules/auth/screens/RegisterScreen';
+import ForgotPasswordScreen from '../modules/auth/screens/ForgotPasswordScreen';
+
+// Main Screens
+import HomeScreen from '../modules/home/screens/HomeScreen';
+import CreateScreen from '../modules/video/screens/CreateScreen';
+import GalleryScreen from '../modules/video/screens/GalleryScreen';
+import ProfileScreen from '../modules/profile/screens/ProfileScreen';
+import SubscriptionScreen from '../modules/payment/screens/SubscriptionScreen';
+
+// Modals
+import VideoEditorModal from '../modules/video/components/VideoEditorModal';
+import SettingsModal from '../modules/profile/components/SettingsModal';
+
+// Hooks
+import { useAuth } from '../modules/auth/hooks/useAuth';
+import LoadingScreen from '../components/common/LoadingScreen';
+
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          let iconName;
+
+          switch (route.name) {
+            case 'Home':
+              iconName = focused ? 'home' : 'home-outline';
+              break;
+            case 'Create':
+              iconName = focused ? 'add-circle' : 'add-circle-outline';
+              break;
+            case 'Gallery':
+              iconName = focused ? 'film' : 'film-outline';
+              break;
+            case 'Profile':
+              iconName = focused ? 'person' : 'person-outline';
+              break;
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.text.secondary,
+        tabBarStyle: {
+          backgroundColor: colors.surface,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
+          paddingBottom: 8,
+          paddingTop: 8,
+          height: 60
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontFamily: 'Inter-Medium'
+        },
+        headerShown: false
+      })}
+    >
+      <Tab.Screen 
+        name="Home" 
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home'
+        }}
+      />
+      <Tab.Screen 
+        name="Create" 
+        component={CreateScreen}
+        options={{
+          tabBarLabel: 'Create'
+        }}
+      />
+      <Tab.Screen 
+        name="Gallery" 
+        component={GalleryScreen}
+        options={{
+          tabBarLabel: 'Gallery'
+        }}
+      />
+      <Tab.Screen 
+        name="Profile" 
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile'
+        }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+export default function AppNavigator() {
+  const { user, loading, initialized } = useAuth();
+
+  if (loading || !initialized) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.surface
+          },
+          headerTintColor: colors.text.primary,
+          headerTitleStyle: {
+            fontFamily: 'Inter-SemiBold'
+          },
+          contentStyle: {
+            backgroundColor: colors.background
+          }
+        }}
+      >
+        {!user ? (
+          // Auth Stack
+          <>
+            <Stack.Screen 
+              name="Login" 
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="Register" 
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="ForgotPassword" 
+              component={ForgotPasswordScreen}
+              options={{ 
+                title: 'Reset Password',
+                headerShown: true 
+              }}
+            />
+          </>
+        ) : (
+          // Main Stack
+          <>
+            <Stack.Screen 
+              name="MainTabs" 
+              component={MainTabs}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen 
+              name="Subscription" 
+              component={SubscriptionScreen}
+              options={{ 
+                title: 'Upgrade Plan',
+                presentation: 'modal'
+              }}
+            />
+            <Stack.Screen 
+              name="VideoEditor" 
+              component={VideoEditorModal}
+              options={{ 
+                title: 'Edit Video',
+                presentation: 'modal'
+              }}
+            />
+            <Stack.Screen 
+              name="Settings" 
+              component={SettingsModal}
+              options={{ 
+                title: 'Settings',
+                presentation: 'modal'
+              }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+// frontend/src/modules/video/screens/CreateScreen.js
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Modal,
+  Animated
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import * as ImagePicker from 'expo-image-picker';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import Button from '../../../components/common/Button';
+import Card from '../../../components/common/Card';
+import TaskCard from '../components/TaskCard';
+import WatermarkSettings from '../components/WatermarkSettings';
+import { colors, typography, spacing } from '../../../themes';
+import { useVideoGeneration } from '../hooks/useVideoGeneration';
+import ProcessingModal from '../components/ProcessingModal';
+
+const CreateScreen = ({ navigation }) => {
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [watermarkSettings, setWatermarkSettings] = useState({
+    text: '@MyVideo',
+    enabled: true,
+    position: 'bottom-right',
+    opacity: 0.7
+  });
+  const [showTasks, setShowTasks] = useState(false);
+  const [showWatermarkSettings, setShowWatermarkSettings] = useState(false);
+  
+  const { generateVideo, loading, progress } = useVideoGeneration();
+  
+  const tasks = [
+    {
+      id: 'cinematic_zoom',
+      name: 'Cinematic Zoom',
+      icon: 'videocam',
+      description: 'Professional zoom effect',
+      duration: 3,
+      color: '#6366F1'
+    },
+    {
+      id: 'pan_motion',
+      name: 'Pan Motion',
+      icon: 'scan',
+      description: 'Smooth panning movement',
+      duration: 4,
+      color: '#10B981'
+    },
+    {
+      id: 'particle_magic',
+      name: 'Particle Magic',
+      icon: 'sparkles',
+      description: 'Magical particle effects',
+      duration: 5,
+      color: '#8B5CF6'
+    },
+    {
+      id: 'neon_glow',
+      name: 'Neon Glow',
+      icon: 'flash',
+      description: 'Cyberpunk neon effects',
+      duration: 4,
+      color: '#EC4899'
+    },
+    {
+      id: 'water_reflection',
+      name: 'Water Reflection',
+      icon: 'water',
+      description: 'Realistic water animation',
+      duration: 3,
+      color: '#3B82F6'
+    },
+    {
+      id: 'random_surprise',
+      name: 'Random Surprise',
+      icon: 'shuffle',
+      description: 'Random AI-powered effect',
+      duration: '?',
+      color: '#F59E0B'
+    }
+  ];
+
+  const pickImage = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [16, 9],
+        quality: 0.8,
+      });
+
+      if (!result.canceled) {
+        setSelectedImage(result.assets[0]);
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+    }
+  };
+
+  const handleGenerate = async () => {
+    if (!selectedImage || !selectedTask) return;
+
+    try {
+      const result = await generateVideo(
+        selectedImage,
+        selectedTask,
+        watermarkSettings
+      );
+
+      if (result) {
+        navigation.navigate('Gallery');
+      }
+    } catch (error) {
+      console.error('Generation error:', error);
+    }
+  };
+
+  const selectRandomTask = () => {
+    const randomIndex = Math.floor(Math.random() * tasks.length);
+    setSelectedTask(tasks[randomIndex]);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <LinearGradient
+            colors={colors.gradients.dark}
+            style={styles.headerGradient}
+          >
+            <Text style={styles.title}>Create AI Video</Text>
+            <Text style={styles.subtitle}>
+              Select a photo and choose an effect
+            </Text>
+          </LinearGradient>
+        </View>
+
+        {/* Image Upload Section */}
+        <Card variant="elevated" style={styles.imageSection}>
+          <Text style={styles.sectionTitle}>1. Select Photo</Text>
+          
+          {selectedImage ? (
+            <View style={styles.imagePreview}>
+              <Image
+                source={{ uri: selectedImage.uri }}
+                style={styles.previewImage}
+              />
+              <TouchableOpacity
+                style={styles.removeImage}
+                onPress={() => setSelectedImage(null)}
+              >
+                <Ionicons name="close-circle" size={24} color={colors.error} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.uploadArea}
+              onPress={pickImage}
+              activeOpacity={0.7}
+            >
+              <LinearGradient
+                colors={['transparent', 'rgba(99, 102, 241, 0.1)']}
+                style={styles.uploadGradient}
+              >
+                <View style={styles.uploadIcon}>
+                  <Ionicons name="image" size={48} color={colors.primary} />
+                </View>
+                <Text style={styles.uploadText}>Tap to select photo</Text>
+                <Text style={styles.uploadSubtext}>
+                  Supports JPG, PNG up to 10MB
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          )}
+        </Card>
+
+        {/* Task Selection */}
+        <Card variant="elevated" style={styles.taskSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>2. Choose Effect</Text>
+            <TouchableOpacity onPress={selectRandomTask}>
+              <View style={styles.randomButton}>
+                <Ionicons name="shuffle" size={16} color={colors.primary} />
+                <Text style={styles.randomText}>Random</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          
+          {selectedTask ? (
+            <View style={styles.selectedTask}>
+              <View style={[styles.taskIcon, { backgroundColor: selectedTask.color }]}>
+                <Ionicons name={selectedTask.icon} size={24} color="#fff" />
+              </View>
+              <View style={styles.taskInfo}>
+                <Text style={styles.taskName}>{selectedTask.name}</Text>
+                <Text style={styles.taskDescription}>
+                  {selectedTask.description}
+                </Text>
+              </View>
+              <TouchableOpacity onPress={() => setShowTasks(true)}>
+                <Text style={styles.changeText}>Change</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={styles.selectTaskButton}
+              onPress={() => setShowTasks(true)}
+            >
+              <Ionicons name="sparkles" size={24} color={colors.primary} />
+              <Text style={styles.selectTaskText}>Select AI Effect</Text>
+            </TouchableOpacity>
+          )}
+        </Card>
+
+        {/* Watermark Settings */}
+        <Card variant="elevated" style={styles.watermarkSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>3. Watermark Settings</Text>
+            <TouchableOpacity
+              onPress={() => setShowWatermarkSettings(true)}
+              style={styles.settingsButton}
+            >
+              <Ionicons name="settings" size={20} color={colors.text.secondary} />
+            </TouchableOpacity>
+          </View>
+          
+          <View style={styles.watermarkPreview}>
+            <View style={styles.previewVideo}>
+              <Text style={styles.watermarkText}>
+                {watermarkSettings.text}
+              </Text>
+              {watermarkSettings.enabled && (
+                <View style={[
+                  styles.watermarkOverlay,
+                  styles[watermarkSettings.position]
+                ]}>
+                  <Text style={[
+                    styles.watermarkPreviewText,
+                    { opacity: watermarkSettings.opacity }
+                  ]}>
+                    {watermarkSettings.text}
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+          
+          <View style={styles.watermarkToggle}>
+            <Text style={styles.toggleText}>Show Watermark</Text>
+            <TouchableOpacity
+              style={[
+                styles.toggle,
+                watermarkSettings.enabled && styles.toggleActive
+              ]}
+              onPress={() => setWatermarkSettings({
+                ...watermarkSettings,
+                enabled: !watermarkSettings.enabled
+              })}
+            >
+              <View style={[
+                styles.toggleCircle,
+                watermarkSettings.enabled && styles.toggleCircleActive
+              ]} />
+            </TouchableOpacity>
+          </View>
+        </Card>
+
+        {/* Generate Button */}
+        <Button
+          title="Generate Video"
+          onPress={handleGenerate}
+          loading={loading}
+          disabled={!selectedImage || !selectedTask || loading}
+          size="lg"
+          style={styles.generateButton}
+          icon={() => (
+            <Ionicons name="sparkles" size={24} color="#fff" />
+          )}
+        />
+
+        {/* Info Cards */}
+        <View style={styles.infoGrid}>
+          <Card variant="filled" style={styles.infoCard}>
+            <Ionicons name="flash" size={24} color={colors.primary} />
+            <Text style={styles.infoTitle}>Fast Generation</Text>
+            <Text style={styles.infoText}>
+              Videos ready in 30-60 seconds
+            </Text>
+          </Card>
+          
+          <Card variant="filled" style={styles.infoCard}>
+            <Ionicons name="infinite" size={24} color={colors.secondary} />
+            <Text style={styles.infoTitle}>Unlimited Effects</Text>
+            <Text style={styles.infoText}>
+              New effects added weekly
+            </Text>
+          </Card>
+        </View>
+      </ScrollView>
+
+      {/* Tasks Modal */}
+      <Modal
+        visible={showTasks}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowTasks(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select Effect</Text>
+              <TouchableOpacity onPress={() => setShowTasks(false)}>
+                <Ionicons name="close" size={24} color={colors.text.primary} />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.tasksGrid}>
+              {tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  selected={selectedTask?.id === task.id}
+                  onSelect={() => {
+                    setSelectedTask(task);
+                    setShowTasks(false);
+                  }}
+                />
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Watermark Settings Modal */}
+      <Modal
+        visible={showWatermarkSettings}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setShowWatermarkSettings(false)}
+      >
+        <WatermarkSettings
+          settings={watermarkSettings}
+          onChange={setWatermarkSettings}
+          onClose={() => setShowWatermarkSettings(false)}
+        />
+      </Modal>
+
+      {/* Processing Modal */}
+      <ProcessingModal
+        visible={loading}
+        progress={progress}
+        task={selectedTask?.name}
+      />
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.background
+  },
+  scrollContent: {
+    paddingBottom: spacing['3xl']
+  },
+  header: {
+    marginBottom: spacing.lg
+  },
+  headerGradient: {
+    paddingVertical: spacing.xl,
+    paddingHorizontal: spacing.lg,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30
+  },
+  title: {
+    fontSize: typography.sizes['3xl'],
+    fontFamily: typography.fontFamily.bold,
+    color: colors.text.primary,
+    marginBottom: spacing.xs
+  },
+  subtitle: {
+    fontSize: typography.sizes.md,
+    color: colors.text.secondary
+  },
+  imageSection: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg
+  },
+  sectionTitle: {
+    fontSize: typography.sizes.lg,
+    fontFamily: typography.fontFamily.semiBold,
+    color: colors.text.primary,
+    marginBottom: spacing.md
+  },
+  uploadArea: {
+    height: 200,
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden'
+  },
+  uploadGradient: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderStyle: 'dashed',
+    borderRadius: borderRadius.lg
+  },
+  uploadIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: `${colors.primary}20`,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md
+  },
+  uploadText: {
+    fontSize: typography.sizes.lg,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.medium,
+    marginBottom: spacing.xs
+  },
+  uploadSubtext: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.secondary
+  },
+  imagePreview: {
+    position: 'relative'
+  },
+  previewImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: borderRadius.lg
+  },
+  removeImage: {
+    position: 'absolute',
+    top: spacing.sm,
+    right: spacing.sm,
+    backgroundColor: colors.surface,
+    borderRadius: 20,
+    padding: 4
+  },
+  taskSection: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.md
+  },
+  randomButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    backgroundColor: `${colors.primary}20`,
+    borderRadius: borderRadius.md
+  },
+  randomText: {
+    color: colors.primary,
+    fontSize: typography.sizes.sm,
+    fontFamily: typography.fontFamily.medium,
+    marginLeft: spacing.xs
+  },
+  selectedTask: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: spacing.md,
+    backgroundColor: colors.card,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+    borderColor: colors.primary
+  },
+  taskIcon: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: spacing.md
+  },
+  taskInfo: {
+    flex: 1
+  },
+  taskName: {
+    fontSize: typography.sizes.lg,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.semiBold,
+    marginBottom: spacing.xs
+  },
+  taskDescription: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.secondary
+  },
+  changeText: {
+    color: colors.primary,
+    fontFamily: typography.fontFamily.medium
+  },
+  selectTaskButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: spacing.xl,
+    backgroundColor: colors.card,
+    borderRadius: borderRadius.lg,
+    borderWidth: 2,
+    borderColor: colors.border,
+    borderStyle: 'dashed'
+  },
+  selectTaskText: {
+    color: colors.text.primary,
+    fontSize: typography.sizes.lg,
+    fontFamily: typography.fontFamily.medium,
+    marginLeft: spacing.md
+  },
+  watermarkSection: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg
+  },
+  settingsButton: {
+    padding: spacing.xs
+  },
+  watermarkPreview: {
+    marginBottom: spacing.md
+  },
+  previewVideo: {
+    width: '100%',
+    height: 150,
+    backgroundColor: colors.card,
+    borderRadius: borderRadius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    overflow: 'hidden'
+  },
+  watermarkText: {
+    color: colors.text.secondary,
+    fontSize: typography.sizes.md
+  },
+  watermarkOverlay: {
+    position: 'absolute',
+    padding: spacing.xs,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    borderRadius: borderRadius.sm
+  },
+  'top-left': {
+    top: spacing.sm,
+    left: spacing.sm
+  },
+  'top-right': {
+    top: spacing.sm,
+    right: spacing.sm
+  },
+  'bottom-left': {
+    bottom: spacing.sm,
+    left: spacing.sm
+  },
+  'bottom-right': {
+    bottom: spacing.sm,
+    right: spacing.sm
+  },
+  'center': {
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -50 }, { translateY: -10 }]
+  },
+  watermarkPreviewText: {
+    color: '#fff',
+    fontSize: typography.sizes.sm
+  },
+  watermarkToggle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  toggleText: {
+    color: colors.text.primary,
+    fontSize: typography.sizes.md
+  },
+  toggle: {
+    width: 50,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: colors.border,
+    padding: 2,
+    justifyContent: 'center'
+  },
+  toggleActive: {
+    backgroundColor: colors.primary
+  },
+  toggleCircle: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#fff',
+    transform: [{ translateX: 0 }]
+  },
+  toggleCircleActive: {
+    transform: [{ translateX: 22 }]
+  },
+  generateButton: {
+    marginHorizontal: spacing.lg,
+    marginBottom: spacing.lg
+  },
+  infoGrid: {
+    flexDirection: 'row',
+    marginHorizontal: spacing.lg,
+    gap: spacing.md
+  },
+  infoCard: {
+    flex: 1,
+    alignItems: 'center',
+    padding: spacing.md
+  },
+  infoTitle: {
+    fontSize: typography.sizes.sm,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.semiBold,
+    marginTop: spacing.sm,
+    marginBottom: spacing.xs,
+    textAlign: 'center'
+  },
+  infoText: {
+    fontSize: typography.sizes.xs,
+    color: colors.text.secondary,
+    textAlign: 'center'
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'flex-end'
+  },
+  modalContent: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    maxHeight: '80%'
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border
+  },
+  modalTitle: {
+    fontSize: typography.sizes.xl,
+    color: colors.text.primary,
+    fontFamily: typography.fontFamily.bold
+  },
+  tasksGrid: {
+    padding: spacing.lg
+  }
+});
+
+export default CreateScreen;
+
+//BACKEND STRUCTURE 
+// backend/src/modules/
+// auth/
+// ├── controllers/
+// │   ├── AuthController.js
+// │   └── UserController.js
+// ├── middlewares/
+// │   ├── auth.js
+// │   └── validate.js
+// ├── services/
+// │   ├── AuthService.js
+// │   └── EmailService.js
+// ├── routes/
+// │   └── authRoutes.js
+// └── validators/
+//     └── authValidator.js
+
+// video/
+// ├── controllers/
+// │   ├── VideoController.js
+// │   └── GenerationController.js
+// ├── services/
+// │   ├── VideoService.js
+// │   ├── AIService.js
+// │   └── WatermarkService.js
+// ├── routes/
+// │   └── videoRoutes.js
+// └── jobs/
+//     └── videoGenerationJob.js
+
+// payment/
+// ├── controllers/
+// │   └── PaymentController.js
+// ├── services/
+// │   └── StripeService.js
+// ├── routes/
+// │   └── paymentRoutes.js
+// └── webhooks/
+//     └── stripeWebhook.js
+
+// admin/
+// ├── controllers/
+// │   └── AdminController.js
+// ├── services/
+// │   └── AdminService.js
+// ├── routes/
+// │   └── adminRoutes.js
+// └── middlewares/
+//     └── adminAuth.js
+
+//MAIN SERVER WITH MODULE SYSTEM
+// backend/src/server.js
+require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
+const path = require('path');
+const mongoose = require('mongoose');
+const redis = require('redis');
+const { rateLimiter } = require('./middlewares/rateLimiter');
+const errorHandler = require('./middlewares/errorHandler');
+
+// Import modules
+const authModule = require('./modules/auth');
+const videoModule = require('./modules/video');
+const paymentModule = require('./modules/payment');
+const adminModule = require('./modules/admin');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Database connection
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => {
+  console.log('✅ MongoDB connected successfully');
+}).catch(err => {
+  console.error('❌ MongoDB connection error:', err);
+  process.exit(1);
+});
+
+// Redis connection
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL
+});
+
+redisClient.on('error', (err) => {
+  console.error('❌ Redis connection error:', err);
+});
+
+redisClient.on('connect', () => {
+  console.log('✅ Redis connected successfully');
+});
+
+// Middlewares
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", process.env.FRONTEND_URL]
+    }
+  }
+}));
+
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  credentials: true
+}));
+
+app.use(compression());
+app.use(morgan('combined'));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+
+// Rate limiting for API routes
+app.use('/api/', rateLimiter);
+
+// Health check
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    redis: redisClient.isOpen ? 'connected' : 'disconnected'
+  });
+});
+
+// Register modules
+app.use('/api/auth', authModule.routes);
+app.use('/api/video', videoModule.routes);
+app.use('/api/payment', paymentModule.routes);
+app.use('/api/admin', adminModule.routes);
+
+// Error handling
+app.use(errorHandler);
+
+// 404 handler
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    path: req.originalUrl
+  });
+});
+
+// Start server
+const server = app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🌐 Environment: ${process.env.NODE_ENV}`);
+  console.log(`📁 Uploads directory: ${path.join(__dirname, '../uploads')}`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Closing server gracefully...');
+  server.close(() => {
+    console.log('Server closed');
+    mongoose.connection.close(false, () => {
+      console.log('MongoDB connection closed');
+      redisClient.quit(() => {
+        console.log('Redis connection closed');
+        process.exit(0);
+      });
+    });
+  });
+});
+
+module.exports = app;
+
+// backend/src/modules/video/index.js
+const express = require('express');
+const videoRoutes = require('./routes/videoRoutes');
+const VideoService = require('./services/VideoService');
+const AIService = require('./services/AIService');
+const WatermarkService = require('./services/WatermarkService');
+
+class VideoModule {
+  constructor() {
+    this.router = express.Router();
+    this.videoService = new VideoService();
+    this.aiService = new AIService();
+    this.watermarkService = new WatermarkService();
+    
+    this.setupRoutes();
+    this.setupWebSocket();
+  }
+  
+  setupRoutes() {
+    this.router.use('/', videoRoutes);
+  }
+  
+  setupWebSocket() {
+    // Real-time generation updates
+    // Implementation for WebSocket/Socket.io
+  }
+  
+  get routes() {
+    return this.router;
+  }
+  
+  get services() {
+    return {
+      video: this.videoService,
+      ai: this.aiService,
+      watermark: this.watermarkService
+    };
+  }
+}
+
+module.exports = new VideoModule();
+
+//Video service
+// backend/src/modules/video/services/VideoService.js
+const ffmpeg = require('fluent-ffmpeg');
+const path = require('path');
+const fs = require('fs').promises;
+const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
+const Video = require('../../../models/Video');
+const User = require('../../../models/User');
+
+class VideoService {
+  constructor() {
+    this.uploadDir = path.join(__dirname, '../../../uploads');
+    this.videoDir = path.join(this.uploadDir, 'videos');
+    this.imageDir = path.join(this.uploadDir, 'images');
+    this.tempDir = path.join(this.uploadDir, 'temp');
+    
+    this.ensureDirectories();
+  }
+  
+  async ensureDirectories() {
+    const dirs = [this.videoDir, this.imageDir, this.tempDir];
+    for (const dir of dirs) {
+      await fs.mkdir(dir, { recursive: true });
+    }
+  }
+  
+  async generateVideo(userId, imageData, task, watermarkSettings) {
+    try {
+      // 1. Validate user credits
+      const user = await User.findById(userId);
+      const creditsNeeded = this.calculateCredits(task.duration, user.tier);
+      
+      if (!user.hasEnoughCredits(creditsNeeded)) {
+        throw new Error('Insufficient credits');
+      }
+      
+      // 2. Save image
+      const imageId = uuidv4();
+      const imagePath = path.join(this.imageDir, `${imageId}.jpg`);
+      await fs.writeFile(imagePath, imageData);
+      
+      // 3. Generate video using AI
+      const videoPath = await this.aiService.generate(
+        imagePath,
+        task.id,
+        task.duration
+      );
+      
+      // 4. Apply watermark
+      let finalVideoPath = videoPath;
+      if (watermarkSettings.enabled) {
+        finalVideoPath = await this.watermarkService.apply(
+          videoPath,
+          watermarkSettings
+        );
+      }
+      
+      // 5. Generate thumbnail
+      const thumbnailPath = await this.generateThumbnail(finalVideoPath);
+      
+      // 6. Create video record
+      const video = new Video({
+        userId,
+        originalImage: imagePath,
+        videoPath: finalVideoPath,
+        thumbnailPath,
+        task: task.id,
+        duration: task.duration,
+        watermarkSettings,
+        creditsUsed: creditsNeeded,
+        status: 'completed'
+      });
+      
+      await video.save();
+      
+      // 7. Deduct credits
+      await user.useCredits(creditsNeeded);
+      
+      return {
+        videoId: video._id,
+        videoUrl: `/videos/${path.basename(finalVideoPath)}`,
+        thumbnailUrl: `/videos/${path.basename(thumbnailPath)}`,
+        duration: video.duration,
+        creditsUsed: creditsNeeded,
+        remainingCredits: user.credits
+      };
+      
+    } catch (error) {
+      throw error;
+    }
+  }
+  
+  async batchGenerate(userId, images, task, watermarkSettings) {
+    const results = [];
+    
+    for (const image of images) {
+      try {
+        const result = await this.generateVideo(
+          userId,
+          image.data,
+          task,
+          watermarkSettings
+        );
+        results.push({ ...result, status: 'success' });
+      } catch (error) {
+        results.push({
+          image: image.name,
+          error: error.message,
+          status: 'failed'
+        });
+      }
+    }
+    
+    return results;
+  }
+  
+  async getVideoMetadata(videoPath) {
+    return new Promise((resolve, reject) => {
+      ffmpeg.ffprobe(videoPath, (err, metadata) => {
+        if (err) return reject(err);
+        
+        const videoStream = metadata.streams.find(s => s.codec_type === 'video');
+        const audioStream = metadata.streams.find(s => s.codec_type === 'audio');
+        
+        resolve({
+          duration: metadata.format.duration,
+          size: metadata.format.size,
+          format: metadata.format.format_name,
+          resolution: videoStream ? `${videoStream.width}x${videoStream.height}` : null,
+          fps: videoStream ? eval(videoStream.r_frame_rate) : null,
+          hasAudio: !!audioStream
+        });
+      });
+    });
+  }
+  
+  async generateThumbnail(videoPath, time = '00:00:01') {
+    const thumbnailPath = videoPath.replace('.mp4', '_thumb.jpg');
+    
+    return new Promise((resolve, reject) => {
+      ffmpeg(videoPath)
+        .screenshots({
+          timestamps: [time],
+          filename: path.basename(thumbnailPath),
+          folder: path.dirname(thumbnailPath),
+          size: '640x360'
+        })
+        .on('end', () => resolve(thumbnailPath))
+        .on('error', reject);
+    });
+  }
+  
+  async applyEffects(videoPath, effects) {
+    let processedPath = videoPath;
+    
+    for (const effect of effects) {
+      switch (effect.type) {
+        case 'trim':
+          processedPath = await this.trimVideo(
+            processedPath,
+            effect.start,
+            effect.end
+          );
+          break;
+          
+        case 'speed':
+          processedPath = await this.changeSpeed(
+            processedPath,
+            effect.speed
+          );
+          break;
+          
+        case 'music':
+          processedPath = await this.addMusic(
+            processedPath,
+            effect.musicPath,
+            effect.volume
+          );
+          break;
+          
+        case 'text':
+          processedPath = await this.addText(
+            processedPath,
+            effect.text,
+            effect.style
+          );
+          break;
+      }
+    }
+    
+    return processedPath;
+  }
+  
+  async trimVideo(videoPath, startTime, endTime) {
+    const outputPath = this.getOutputPath(videoPath, 'trimmed');
+    
+    return new Promise((resolve, reject) => {
+      ffmpeg(videoPath)
+        .setStartTime(startTime)
+        .setDuration(endTime - startTime)
+        .on('end', () => resolve(outputPath))
+        .on('error', reject)
+        .save(outputPath);
+    });
+  }
+  
+  async changeSpeed(videoPath, speed) {
+    const outputPath = this.getOutputPath(videoPath, `speed_${speed}`);
+    
+    return new Promise((resolve, reject) => {
+      ffmpeg(videoPath)
+        .videoFilter(`setpts=${1/speed}*PTS`)
+        .audioFilter(`atempo=${speed}`)
+        .on('end', () => resolve(outputPath))
+        .on('error', reject)
+        .save(outputPath);
+    });
+  }
+  
+  getOutputPath(originalPath, suffix) {
+    const dir = path.dirname(originalPath);
+    const ext = path.extname(originalPath);
+    const name = path.basename(originalPath, ext);
+    return path.join(dir, `${name}_${suffix}${ext}`);
+  }
+  
+  calculateCredits(duration, tier) {
+    const baseRate = {
+      free: 2,
+      pro: 1,
+      business: 0.5,
+      enterprise: 0.25
+    };
+    
+    const rate = baseRate[tier] || baseRate.free;
+    return Math.ceil(duration * rate);
+  }
+}
+
+module.exports = VideoService;
+
+//Docker
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # MongoDB
+  mongodb:
+    image: mongo:6
+    container_name: ai-video-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD}
+      MONGO_INITDB_DATABASE: ai_video_app
+    volumes:
+      - mongodb_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - ai-video-network
+
+  # Redis
+  redis:
+    image: redis:7-alpine
+    container_name: ai-video-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - ai-video-network
+
+  # Backend API
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ai-video-api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongodb:27017/ai_video_app?authSource=admin
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      AI_API_KEY: ${AI_API_KEY}
+      FRONTEND_URL: ${FRONTEND_URL}
+    volumes:
+      - uploads_data:/app/uploads
+      - ./backend/logs:/app/logs
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - ai-video-network
+    healthcheck:
+      test: ["CMD", "node", "./healthcheck.js"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Video Processing Worker
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.worker
+    container_name: ai-video-worker
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+      AI_API_KEY: ${AI_API_KEY}
+    volumes:
+      - uploads_data:/app/uploads
+      - ./backend/logs:/app/logs
+    depends_on:
+      - redis
+      - api
+    networks:
+      - ai-video-network
+    deploy:
+      replicas: 2
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: ai-video-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - uploads_data:/var/www/uploads
+      - ./frontend/build:/var/www/frontend
+    depends_on:
+      - api
+    networks:
+      - ai-video-network
+
+  # Admin Panel
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    container_name: ai-video-admin
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      API_URL: http://api:3000
+      ADMIN_USERNAME: ${ADMIN_USERNAME}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+    networks:
+      - ai-video-network
+
+  # Monitoring (Prometheus + Grafana)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: ai-video-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - ai-video-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: ai-video-grafana
+    restart: unless-stopped
+    ports:
+      - "3002:3000"
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD}
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - ai-video-network
+
+networks:
+  ai-video-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+  redis_data:
+  uploads_data:
+  prometheus_data:
+  grafana_data:
+
+# backend/Dockerfile
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Install dependencies
+COPY package*.json ./
+RUN npm ci --only=production
+
+# Copy source code
+COPY . .
+
+# Install FFmpeg
+RUN apk add --no-cache ffmpeg
+
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+USER nodejs
+
+EXPOSE 3000
+
+CMD ["node", "src/server.js"]
+# nginx/nginx.conf
+events {
+    worker_connections 1024;
+}
+
+http {
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+    
+    # Logging
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+    
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript 
+               application/json application/javascript application/xml+rss 
+               application/atom+xml image/svg+xml;
+    
+    # Rate limiting
+    limit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;
+    limit_req_zone $binary_remote_addr zone=video:10m rate=5r/s;
+    
+    # Upstream servers
+    upstream api_backend {
+        server api:3000;
+        keepalive 32;
+    }
+    
+    server {
+        listen 80;
+        server_name ai-video-app.com www.ai-video-app.com;
+        
+        # Redirect to HTTPS
+        return 301 https://$server_name$request_uri;
+    }
+    
+    server {
+        listen 443 ssl http2;
+        server_name ai-video-app.com www.ai-video-app.com;
+        
+        # SSL certificates
+        ssl_certificate /etc/nginx/ssl/fullchain.pem;
+        ssl_certificate_key /etc/nginx/ssl/privkey.pem;
+        
+        # SSL configuration
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-RSA-AES256-GCM-SHA512:DHE-RSA-AES256-GCM-SHA512;
+        ssl_prefer_server_ciphers off;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        
+        # Security headers
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-XSS-Protection "1; mode=block" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "no-referrer-when-downgrade" always;
+        add_header Content-Security-Policy "default-src 'self' http: https: data: blob: 'unsafe-inline'" always;
+        add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+        
+        # API routes
+        location /api/ {
+            limit_req zone=api burst=20 nodelay;
+            
+            proxy_pass http://api_backend;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection 'upgrade';
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            
+            proxy_buffering off;
+            proxy_request_buffering off;
+            
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+        }
+        
+        # Video file serving
+        location /videos/ {
+            limit_req zone=video burst=10 nodelay;
+            
+            alias /var/www/uploads/videos/;
+            
+            # Cache video files
+            expires 1y;
+            add_header Cache-Control "public, immutable";
+            
+            # Security for video files
+            add_header X-Content-Type-Options "nosniff";
+            
+            # Only allow from our domains
+            valid_referers none blocked ai-video-app.com *.ai-video-app.com;
+            if ($invalid_referer) {
+                return 403;
+            }
+            
+            # Range requests for video streaming
+            mp4;
+            mp4_buffer_size 1M;
+            mp4_max_buffer_size 5M;
+        }
+        
+        # Frontend static files
+        location / {
+            root /var/www/frontend;
+            index index.html;
+            try_files $uri $uri/ /index.html;
+            
+            # Cache static assets
+            location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
+                expires 1y;
+                add_header Cache-Control "public, immutable";
+            }
+        }
+        
+        # Admin panel
+        location /admin/ {
+            auth_basic "Admin Area";
+            auth_basic_user_file /etc/nginx/.htpasswd;
+            
+            proxy_pass http://admin:3001;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+        }
+        
+        # Health check endpoint
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+        }
+        
+        # File upload size
+        client_max_body_size 100M;
+    }
+}
+#!/bin/bash
+# build.sh - Complete build script
+
+set -e
+
+echo "🚀 Building AI Video App..."
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Check dependencies
+echo "📋 Checking dependencies..."
+command -v node >/dev/null 2>&1 || { echo -e "${RED}Node.js is not installed${NC}"; exit 1; }
+command -v docker >/dev/null 2>&1 || { echo -e "${RED}Docker is not installed${NC}"; exit 1; }
+command -v docker-compose >/dev/null 2>&1 || { echo -e "${RED}Docker Compose is not installed${NC}"; exit 1; }
+
+# Clean up previous builds
+echo "🧹 Cleaning previous builds..."
+rm -rf backend/node_modules frontend/node_modules
+rm -rf backend/build frontend/build
+
+# Install backend dependencies
+echo "📦 Installing backend dependencies..."
+cd backend
+npm ci --only=production
+cd ..
+
+# Install frontend dependencies
+echo "📦 Installing frontend dependencies..."
+cd frontend
+npm ci
+cd ..
+
+# Build frontend
+echo "🔨 Building frontend..."
+cd frontend
+npm run build
+cd ..
+
+# Build Docker images
+echo "🐳 Building Docker images..."
+docker-compose build
+
+echo -e "${GREEN}✅ Build completed successfully!${NC}"
+echo ""
+echo "Next steps:"
+echo "1. Configure environment variables in .env file"
+echo "2. Run: docker-compose up -d"
+echo "3. Visit: https://localhost"
+
+#!/bin/bash
+# deploy.sh - Production deployment script
+
+set -e
+
+echo "🚀 Deploying AI Video App to Production..."
+
+# Load environment
+source .env
+
+# Colors
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
+# Validate environment
+echo "🔍 Validating environment..."
+if [ -z "$MONGODB_URI" ] || [ -z "$STRIPE_SECRET_KEY" ] || [ -z "$JWT_SECRET" ]; then
+    echo -e "${RED}❌ Missing required environment variables${NC}"
+    exit 1
+fi
+
+# Pull latest code
+echo "📥 Pulling latest code..."
+git pull origin main
+
+# Build and deploy
+echo "🔨 Building application..."
+./build.sh
+
+echo "🐳 Starting services..."
+docker-compose up -d --scale worker=4
+
+echo "⏳ Waiting for services to start..."
+sleep 30
+
+# Run database migrations
+echo "📊 Running database migrations..."
+docker-compose exec api node scripts/migrate.js
+
+# Seed initial data
+echo "🌱 Seeding initial data..."
+docker-compose exec api node scripts/seed.js
+
+# Health check
+echo "🏥 Performing health check..."
+HEALTH_STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://$DOMAIN/health)
+
+if [ "$HEALTH_STATUS" = "200" ]; then
+    echo -e "${GREEN}✅ Deployment successful!${NC}"
+    echo ""
+    echo "Application is now live at: https://$DOMAIN"
+    echo "Admin panel: https://$DOMAIN/admin"
+    echo "Grafana: https://$DOMAIN:3002"
+else
+    echo -e "${RED}❌ Health check failed${NC}"
+    exit 1
+fi
+
+# Send deployment notification
+if [ -n "$SLACK_WEBHOOK" ]; then
+    curl -X POST -H 'Content-type: application/json' \
+    --data "{\"text\":\"🚀 AI Video App deployed successfully!\n• Version: $(git rev-parse --short HEAD)\n• Domain: https://$DOMAIN\n• Time: $(date)\"}" \
+    $SLACK_WEBHOOK
+fi
+#!/bin/bash
+# monitor.sh - Application monitoring
+
+echo "📊 AI Video App Monitoring Dashboard"
+echo "===================================="
+
+# API health
+echo -n "API Status: "
+API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3000/health)
+if [ "$API_STATUS" = "200" ]; then
+    echo "✅ Healthy"
+else
+    echo "❌ Unhealthy ($API_STATUS)"
+fi
+
+# Database
+echo -n "Database: "
+if docker-compose exec mongodb mongo --quiet --eval "db.stats().ok" > /dev/null 2>&1; then
+    echo "✅ Connected"
+else
+    echo "❌ Disconnected"
+fi
+
+# Redis
+echo -n "Redis: "
+if docker-compose exec redis redis-cli ping > /dev/null 2>&1; then
+    echo "✅ Connected"
+else
+    echo "❌ Disconnected"
+fi
+
+# Worker count
+WORKER_COUNT=$(docker-compose ps worker | grep -c "Up")
+echo "Active Workers: $WORKER_COUNT"
+
+# Storage usage
+echo -n "Storage Usage: "
+STORAGE=$(du -sh uploads/ | cut -f1)
+echo "$STORAGE"
+
+# Recent errors
+echo ""
+echo "Recent Errors (last 10):"
+docker-compose logs --tail=100 api | grep -i error | tail -10
+
+# Performance metrics
+echo ""
+echo "Performance Metrics:"
+echo "API Requests (last 5min): $(cat logs/access.log | grep "$(date -d '5 minutes ago' '+%H:%M')" | wc -l)"
+echo "Video Generations (today): $(docker-compose exec mongodb mongo --quiet --eval "db.videos.count({createdAt: {\$gte: new Date(new Date().setHours(0,0,0,0))}})" ai_video_app)"
+
+// frontend/App.js
+import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'expo-status-bar';
+import * as SplashScreen from 'expo-splash-screen';
+import * as Font from 'expo-font';
+import { Ionicons } from '@expo/vector-icons';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import { AuthProvider } from './src/modules/auth/providers/AuthProvider';
+import AppNavigator from './src/navigation/AppNavigator';
+import { ThemeProvider } from './src/themes/ThemeProvider';
+import ErrorBoundary from './src/components/common/ErrorBoundary';
+
+// Keep splash screen visible while loading
+SplashScreen.preventAutoHideAsync();
+
+export default function App() {
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        // Load fonts
+        await Font.loadAsync({
+          ...Ionicons.font,
+          'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+          'Inter-Medium': require('./assets/fonts/Inter-Medium.ttf'),
+          'Inter-SemiBold': require('./assets/fonts/Inter-SemiBold.ttf'),
+          'Inter-Bold': require('./assets/fonts/Inter-Bold.ttf'),
+        });
+
+        // Load any other assets
+        // await Asset.loadAsync([...]);
+
+        // Initialize analytics
+        // await initializeAnalytics();
+
+        // Initialize error tracking
+        // await initializeErrorTracking();
+      } catch (e) {
+        console.warn(e);
+        setError(e);
+      } finally {
+        setAppIsReady(true);
+        await SplashScreen.hideAsync();
+      }
+    }
+
+    prepare();
+  }, []);
+
+  if (!appIsReady) {
+    return null;
+  }
+
+  if (error) {
+    return (
+      <ErrorBoundary error={error}>
+        <Text>Failed to load app</Text>
+      </ErrorBoundary>
+    );
+  }
+
+  return (
+    <ErrorBoundary>
+      <StripeProvider
+        publishableKey="pk_test_your_stripe_key_here"
+        merchantIdentifier="merchant.com.aivideoapp"
+        urlScheme="aivideoapp"
+      >
+        <ThemeProvider>
+          <AuthProvider>
+            <StatusBar style="light" />
+            <AppNavigator />
+          </AuthProvider>
+        </ThemeProvider>
+      </StripeProvider>
+    </ErrorBoundary>
+  );
+}
+
+# .env.production
+# ================
+# Application
+NODE_ENV=production
+PORT=3000
+DOMAIN=ai-video-app.com
+FRONTEND_URL=https://ai-video-app.com
+
+# Database
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/ai_video_app?retryWrites=true&w=majority
+REDIS_URL=redis://:password@redis-server:6379
+
+# Authentication
+JWT_SECRET=your_super_secret_jwt_key_here
+JWT_REFRESH_SECRET=your_refresh_secret_here
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+
+# Payments
+STRIPE_SECRET_KEY=sk_live_your_stripe_secret_key
+STRIPE_PUBLISHABLE_KEY=pk_live_your_stripe_publishable_key
+STRIPE_WEBHOOK_SECRET=whsec_your_webhook_secret
+
+# AI Services
+OPENAI_API_KEY=sk-your-openai-api-key
+REPLICATE_API_TOKEN=your_replicate_token
+STABILITY_API_KEY=your_stability_key
+
+# Email
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email@gmail.com
+SMTP_PASSWORD=your_app_password
+
+# Storage
+AWS_ACCESS_KEY_ID=your_aws_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret
+S3_BUCKET=ai-video-app-bucket
+S3_REGION=us-east-1
+
+# Monitoring
+SENTRY_DSN=your_sentry_dsn
+NEW_RELIC_LICENSE_KEY=your_new_relic_key
+
+# Admin
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=secure_admin_password
+
+# Feature Flags
+ENABLE_BATCH_GENERATION=true
+ENABLE_TEXT_TO_VIDEO=true
+ENABLE_SOCIAL_SHARING=true
+MAX_VIDEO_DURATION=60
+MAX_FILE_SIZE=104857600 # 100MB
+
